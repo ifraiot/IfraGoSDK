@@ -1,7 +1,7 @@
 # IfraGoSDK
 ## Installation
 ```
-go get ifraiot/IfraGoSDK
+go get github.com/ifraiot/IfraGoSDK
 ```
 ## Using Example
 ```
@@ -12,7 +12,7 @@ func main() {
 	password := flag.String("password", "", "MQTT password")
 	flag.Parse()
 
-	ifraCon := ifrasdk.NewIFRA(
+	ifraCon := ifraGoSDK.NewIFRA(
 		*topic,
 		*username,
 		*password)
