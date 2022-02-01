@@ -42,7 +42,7 @@ func NewIFRA(topic, username, password string) Ifra {
 	opts.OnConnect = MQTTConnectHandler
 	// opts.OnConnectionLost = connectLostHandler
 	client := mqtt.NewClient(opts)
-	if token := client.Connect(); token.WaitTimeout(time.Second*10) && token.Error() != nil {
+	if token := client.Connect(); token.WaitTimeout(time.Duration(time.Second*10)) && token.Error() != nil {
 		fmt.Println(token.Error())
 	}
 
@@ -88,10 +88,9 @@ func (i *ifra) Send() {
 		fmt.Println(err)
 	}
 
-	if token := i.MQTTClient.Publish(i.Topic, 0, false, string(enc)); token.WaitTimeout(time.Second*10) && token.Error() != nil {
+	if token := i.MQTTClient.Publish(i.Topic, 0, false, string(enc)); token.WaitTimeout(time.Duration(time.Second*10)) && token.Error() != nil {
 		fmt.Println(token.Error())
 	}
-	
 
 	//fmt.Println(string(enc))
 
