@@ -23,7 +23,7 @@ type ifra struct {
 
 type Ifra interface {
 	AddMeasurement(name string, value float64)
-	Send()
+	Send() error
 	ToJson() string
 	Disconnect()
 }
@@ -31,7 +31,7 @@ type Ifra interface {
 const IFRA_MQTT_BROKER_HOST = "mqtt.ifra.io"
 const IFRA_MQTT_BROKER_PORT = 1883
 
-func NewIFRA(topic, username, password string) Ifra {
+func NewIFRA(topic, username, password string) (Ifra,error) {
 	fmt.Println("start connect: ", topic, username, password)
 	opts := mqtt.NewClientOptions()
 	opts.AddBroker(fmt.Sprintf("tcp://%s:%d", IFRA_MQTT_BROKER_HOST, IFRA_MQTT_BROKER_PORT))
@@ -47,14 +47,16 @@ func NewIFRA(topic, username, password string) Ifra {
 	}
 	if err := token.Error(); err != nil {
 		fmt.Println(err)
+		return nil,err
 	}
 
-	return &ifra{
+	return &ifra {
 		Topic:      topic,
 		Username:   username,
 		Password:   password,
 		MQTTClient: client,
-	}
+		
+	},nil
 }
 
 var MQTTConnectHandler mqtt.OnConnectHandler = func(client mqtt.Client) {
@@ -72,7 +74,7 @@ func (i *ifra) Disconnect() {
 	i.MQTTClient.Disconnect(250)
 }
 
-func (i *ifra) Send() {
+func (i *ifra) Send() error{
 	//Convert data to SenML format
 	// var record senml.Pack
 
@@ -89,6 +91,7 @@ func (i *ifra) Send() {
 	enc, err := senml.Encode(pack, senml.JSON)
 	if err != nil {
 		fmt.Println(err)
+		return err
 	}
 
 	token := i.MQTTClient.Publish(i.Topic, 0, false, string(enc))
@@ -96,12 +99,14 @@ func (i *ifra) Send() {
 	}
 	if err := token.Error(); err != nil {
 		fmt.Println(err)
+		return err
 	}
 
 	//fmt.Println(string(enc))
 
 	//Clear measurement data
 	i.Measurements = []Measurement{}
+	return nil
 }
 
 func (i *ifra) ToJson() string {
