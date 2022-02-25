@@ -28,7 +28,7 @@ type Ifra interface {
 	Disconnect()
 }
 
-const IFRA_MQTT_BROKER_HOST = "mqtt.ifra.io"
+const IFRA_MQTT_BROKER_HOST = "nebular.mqtt.ifra.io"
 const IFRA_MQTT_BROKER_PORT = 1883
 
 func NewIFRA(topic, username, password string) (Ifra,error) {
